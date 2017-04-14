@@ -38,12 +38,12 @@ def like_post(insta_username):
     response_to_like = requests.post(request_url, payload).json()
    # print response_to_like['meta']['code']
     print response_to_like
-like_post('manpreet287')
+#like_post('manpreet287')
 #https://api.instagram.com/v1/media/{media-id}/comments?access_token=ACCESS-TOKEN
-def command_on_user_id(insta_username):
+def comment_on_user_id(insta_username):
     user_media_id=get_user_post(insta_username)
     request_url= (BASE_URL+ 'media/%s/comments?access_token%s') %(user_media_id,App_Access_Token)
-    #request_data=("access_token":App_Access_Token,'text': "Test")
-    comments = requests.get(request_url).json()
-    print comments
-command_on_user_id('manpreet287')
+    request_data={"access_token" : App_Access_Token,'text': "nice design"}
+    comment_request = requests.post(request_url,request_data).json()
+    print comment_request
+comment_on_user_id('manpreet287')
