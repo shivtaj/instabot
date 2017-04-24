@@ -4,20 +4,32 @@ BASE_URL = "https://api.instagram.com/v1/"
 data = requests.get("https://api.github.com/events")
 
 # this function is used for owner info
+
+
 def info_owner():
-    url_owner = BASE_URL+"users/self/?access_token="+App_Access_Token
-
-    owner_info = requests.get(url_owner).json()
-    print (owner_info)
-
-    print(owner_info["data"]["full_name"])
-    print(owner_info["data"]["bio"])
-    print(owner_info["data"]["username"])  # to get the owner info
+    owner_url = BASE_URL + "users/self/?access_token=" + App_Access_Token   #https://api.instagram.com/v1/users/self/?access_token=ACCESS-TOKEN
+    owner_info = requests.get(owner_url).json()                             #Get information about the owner of the access_token
+    #print owner_info
+    print ("_____________owner_info______________")
+    print("Name                    : ", owner_info['data']['full_name'])
+    print("Username                : ", owner_info['data']['username'])
+    print("Link to Profile Picture : ", owner_info['data']['profile_picture'])
+    print("Media Shared            : ", owner_info['data']['counts']['media'])
+    print("Followed By             : ", owner_info['data']['counts']['followed_by'])
+    print("Followers               : ", owner_info['data']['counts']['follows'])
+    if owner_info['data']['website'] != '':
+        print("Website                 : ", owner_info['data']['website'])
+    else:
+        print("Website                 :  No Website Available")
+    if owner_info['data']['bio'] != '':
+        print("Bio                     : ", owner_info['data']['bio'])
+    else:
+        print("Bio                     :  No Info Available")
 
 
 # https://api.instagram.com/v1/users/{user-id}/?access_token=ACCESS-TOKEN
-
 # this function is used get the info of user
+
 def user_by_username(insta_user):
     url = BASE_URL + 'users/search?q=' + insta_user + "&access_token="+App_Access_Token
     my_info = requests.get(url).json()
@@ -25,8 +37,9 @@ def user_by_username(insta_user):
     return my_info['data'][0]['id']
 
 # https://api.instagram.com/v1/users/self/media/recent/?access_token=ACCESS-TOKEN
-
 # this function is used  to get the post of user
+
+
 def get_user_post(insta_username):
     user_id = user_by_username(insta_username)
     request_url = BASE_URL + 'users/'+user_id + '/media/recent/?access_token='+App_Access_Token
@@ -34,7 +47,7 @@ def get_user_post(insta_username):
     recent_posts = requests.get(request_url).json()
     success = recent_posts['meta']['code']
     if len(recent_posts['data']) == 0:
-        print ("\n post found for this user!")
+        print ("\n no post found for this user!")
     else:
         for post_no in range(0, len(recent_posts['data']), 1):
             post_no
@@ -64,13 +77,13 @@ def like_post(insta_username):
         print"post not liked plz try again"
         return
 # print response_to_like['meta']['code']
-
-# https://api.instagram.com/v1/media/{media-id}/comments?access_token=ACCESS-TOKEN
-
 # this  function is used for comment on user post
+
+
 def post_new_comment(insta_username):
     user_media_id = get_user_post(insta_username)
-    print "u can write the comment but the following steps should be followed \nNOTE: 1.don,t exceed the character to 200 \n 2.can not use tags more then 3 \n 3.comment can not contain all capital letters"
+    print "u can write the comment but the following steps should be followed \nNOTE:\n 1.don,t exceed the character to 200 \n 2.can not use tags more then 3 \n 3.comment can not contain all capital letters"
+    print " write your comment here:"
     b = str(raw_input())
     request_url = BASE_URL + 'media/'+user_media_id+'/comments'
     request_data = {"access_token": App_Access_Token, 'text': b}
@@ -84,6 +97,8 @@ def post_new_comment(insta_username):
         return
 
 # this function is used for search comment on any  post of user
+
+
 def search_comment(insta_username):
     user_post_id = get_user_post(insta_username)
     # print "content related to comment"
@@ -104,7 +119,7 @@ def search_comment(insta_username):
             print"comment found"
     if len(comments_found) == 0:
         print " no comment is found in post "
-        again_search = raw_input("enter again for another  word  to search")
+        again_search = raw_input("enter 'y' or 'Y' for another  word  to search")
         if again_search == 'y'or again_search == 'Y':
             search_comment(insta_username)
         else:
@@ -114,6 +129,7 @@ def search_comment(insta_username):
 
 # this function is used to delete the comment from post
 
+
 def delete_comment(insta_username):
     comments_id_found, user_post_id = search_comment(insta_username)
     print user_post_id
@@ -122,7 +138,7 @@ def delete_comment(insta_username):
             request_url = BASE_URL + "media/" + str(user_post_id) + "/comments/" + str(comments_id_found[j]) + "?access_token=" + App_Access_Token
             success = requests.delete(request_url).json()
             print success
-            if success['meta']['code']==200:
+            if success['meta']['code'] == 200:
                 print"comment is successfully deleted from post"
             else:
                 print"deletion is not done"
@@ -130,6 +146,8 @@ def delete_comment(insta_username):
         print"comment can't be deleted"
 
 # this function is used  to get the average of user's post
+
+
 def average_post(insta_username):
     no_of_words = 0
     list_of_comments = []
@@ -147,28 +165,40 @@ def average_post(insta_username):
         average_words = float(no_of_words)/len(list_of_comments)  # used to calculate the average
         print("average of post = %.2f" % average_words)
         return
-
-choice = raw_input("press y for enter in post or n for return")
-if choice == 'y':
-    insta_username = 'Gabaishu7596'
-    enter_choice = raw_input("enter ur choice:\n 1 for get info_owner\n 2 for user_detail\n 3 for get_user_post\n 4 for like\n 5 for comment\n 6 for search comment\n 7 for delete comment \n 8 for average")
+print("\n hello user! welcome to instabot")
+info_owner()
+Input = raw_input("enter 'y' or 'Y'for the user post")
+while Input == 'y'or Input == 'Y':
+    print("choose the username from following \n 1.manpreet287 \n 2.bajwa_jugnu \n ")
+    insta_username = raw_input()
+    if insta_username not in ['manpreet287', 'bajwa_jugnu']:
+        print "you choice is invalid plz enter a valid user"
+    else:
+        print"what u want to do with user id"
+    enter_choice = raw_input("enter ur choice\n 1.for user_detail\n 2.for get_user_post\n 3.for like\n 4.for comment\n 5.for search comment\n 6.for delete comment \n 7.for average")
     if enter_choice == '1':
-        info_owner()
-    elif enter_choice == '2':
         user_by_username(insta_username)
-    elif enter_choice == '3':
+    elif enter_choice == '2':
         get_user_post(insta_username)
-    elif enter_choice == '4':
+    elif enter_choice == '3':
         like_post(insta_username)
-    elif enter_choice == '5':
+    elif enter_choice == '4':
         post_new_comment(insta_username)
-    elif enter_choice == '6':
+    elif enter_choice == '5':
         search_comment(insta_username)
-    elif enter_choice == '7':
+    elif enter_choice == '6':
         delete_comment(insta_username)
-    elif enter_choice == '8':
+    elif enter_choice == '7':
         average_post(insta_username)
     else:
-        print"\n exit"
+        print"choice not correct plz enter from given option"
+        enter_choice = raw_input("enter ur choice 1.for user_detail\n 2.for get_user_post\n 3.for like\n 4.for comment\n 5.for search comment\n 6.for delete comment \n 7.for average")
+    print("\n press 'Y' or 'y' to continue or press any key to exit \n")
+    Input = raw_input()
 else:
-    print"choice is not correct"
+    print (".....thnkuu for using instabot....")
+
+
+
+
+
